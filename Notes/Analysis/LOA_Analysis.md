@@ -49,6 +49,57 @@ call ues.dbo.GetEventsWithActionsByEeId(#value#)
 The LOA gets processed here![Alt text](../images/LOA_processing_method.png?raw=true "Title")
 
 Most of the event processing occurs in EventEngine. 
+
+## 4. GetEventsWithActionsToProcess Sproc
+This stored procedure gathers the necessary data from the LOA event tables set in RI. This is the **new** way of handling LOA events.
+
+### OUTPUT:
+
+
+| Insert Column                             | Source Table                          | Source Column / Expression                                                                 |
+|------------------------------------------|----------------------------------------|---------------------------------------------------------------------------------------------|
+| evtId                                    | `ues.dbo.DetectEvents`                | `detevt_id`                                                                                 |
+| evtEeId                                  | `ues.dbo.DetectEvents`                | `detevt_eeid`                                                                               |
+| evtErId                                  | *Variable*                             | `@ee_erid`                                                                                  |
+| evtType                                  | `ues.dbo.DetectEvents`                | `detevt_type`                                                                               |
+| evtReasonId                              | `ues.dbo.DetectEvents`                | `detevt_reasonid`                                                                           |
+| evtSource                                | `ues.dbo.DetectEvents`                | `detevt_source`                                                                             |
+| evtEligGrpId                             | `ues.dbo.DetectEvents`                | `detevt_eliggrpid`                                                                          |
+| evtDate                                  | *Expression*                           | `CASE` using `detevt_type`, `loalds_id`, `loaold_original_leave_date`, etc.                |
+| evtDetDate                               | `ues.dbo.DetectEvents`                | `detevt_detdate`                                                                            |
+| evtCause                                 | `ues.dbo.DetectEvents`                | `detevt_causeEvtId`                                                                         |
+| eligGrpPlanYrEnd                         | `ues.dbo.EligGroups`                  | `eliggrp_planyr_end`                                                                        |
+| procAction                               | *Literal*                              | `4`                                                                                         |
+| evtActElectId                            | `ues.dbo.EmployeeElections`           | `elect_id`                                                                                  |
+| evtActAction                             | `ues.dbo.LOAActionCodes`              | `loaac_constants_id`                                                                        |
+| evtActElectStatus                        | `ues.dbo.EmployeeElections`           | `elect_status`                                                                              |
+| evtActEffDateTiming                      | `ues.dbo.LOAEffectiveDateTimingCodes` | `loaedtc_constants_id`                                                                      |
+| evtActActionWindow                       | `ues.dbo.LOAEvents`                   | `loae_process_window`                                                                       |
+| evtActLifeStatusChangeEffDateWaitPeriod  | *Function*                             | `dbo.udf_GetLOAWaitingPeriodValue(...)`                                                     |
+| evtActBndlPlanId                         | `ues.dbo.EmployeeElections`           | `elect_bndlplanid`                                                                          |
+| evtActRuleId                             | `ues.dbo.LOAEvents`                   | `loae_id`                                                                                   |
+| evtActSelListId                          | `ues.dbo.EmployeeElections`           | `elect_sellistid`                                                                           |
+| evtEffDate                               | *Expression*                           | `CASE` using `ues.dbo.GetTermEffectiveDatePayroll(...)` or `ues.dbo.GetEventEffectiveDate(...)` |
+| causedEvtId                              | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtType                            | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtReasonId                        | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtSource                          | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtEligGrpId                       | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtDate                            | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtDetDate                         | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtAction                          | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtEffDateTiming                   | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtWindow                          | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtLSChangeEffDateWaitingPeriod    | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtRuleId                          | *NULL*                                 | `NULL`                                                                                      |
+| causedEvtEffDate                         | *NULL*                                 | `NULL`                                                                                      |
+| evtFirstOfMonthRule                      | *NULL*                                 | `NULL`                                                                                      |
+| electTranDate                            | `ues.dbo.EmployeeElections`           | `elect_tran_date`                                                                           |
+
+The columns that seem important are the following:
+- evtActAction
+- evtActRuleId
+  
 ## ✅ TODO
 - check out the logic on how EventActions are generated.
 - figure out what sp_susemp_process does
