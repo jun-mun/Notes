@@ -97,9 +97,10 @@ This stored procedure gathers the necessary data from the LOA event tables set i
 | electTranDate                            | `ues.dbo.EmployeeElections`           | `elect_tran_date`                                                                           |
 
 The columns that seem important are the following:
-- evtActAction
-- evtActRuleId
-  
+- evtActAction (the action - terminate, keep, etc.)
+- evtActRuleId (the record on LOAEvents - sort of the main table  holding lots of foreign keys)
+- 
+## 5. 
 ## ✅ TODO
 - check out the logic on how EventActions are generated.
 - figure out what sp_susemp_process does
