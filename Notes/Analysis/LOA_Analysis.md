@@ -99,8 +99,57 @@ This stored procedure gathers the necessary data from the LOA event tables set i
 The columns that seem important are the following:
 - evtActAction (the action - terminate, keep, etc.)
 - evtActRuleId (the record on LOAEvents - sort of the main table  holding lots of foreign keys)
-- 
-## 5. 
+
+Again, as mentioned in Section 3 (EventEngine), EventEngine calls this stored procedure, Here is a screenshot of the results: 
+![Alt text](../images/GetEventWithActionResult.png "Title")
+
+With these results, the method initializes an **ProcessableEvent** as 'thisEvent'. Then it initializes an **EventAction** object and sets it as 'thisEvent's action. 
+
+![Screenshot](../images/Screenshot_init_ProcessableEvent_and_EventAction.png "")
+
+EventAction thisAction is set to thisEvent:
+```java
+    if (thisEvent != null) {
+        if (actionList != null && !actionList.isEmpty()) {
+            actions = new EventAction[actionList.size()];
+            actions = actionList.toArray(actions);
+            thisEvent.setActions(actions);
+        }
+        eventList.add(thisEvent);
+    }
+```
+## 5. Back to EventEngine
+Then, we process those events with actions with the following call:
+```java
+    try {
+        actEvents = this.getEventsWithActionsToProcess(eeId);
+        boolean cobraLifeEventOpen = COBRAUtil.isCobraLifeEventOpen(eeId);
+        // processing the event and actions we JUST got from the db!
+        actions = this.processEventsWithActions(actEvents, processedByAnalysisEngine, 
+                                                employeeTermination, cobraLifeEventOpen);
+    } catch (final Exception e) {
+        eventEngineLogger.error("Error processing events with actions for ee_id=" + eeId, e);
+    }
+```
+
+**EventEngine#processEventsWithActions** eventually calls **EventProcessor#processEventsWithActions** which simply iterates through an array of provided PorcessableEvent and calls **EventProcessor#processOneEvent**
+
+```java
+if (events != null) {
+    for (int i = 0; i < events.length; i++) {
+        // Calls EventProcessor#processOneEvent
+        list.addAll(processOneEvent(events[i], 
+                                    processedByAnalysisEngine,
+                                    user,
+                                    employeeTermination,
+                                    cobraLifeEventOpen));
+    }
+}
+```
+
+In  **EventProcessor#processOneEvent**, 
+
+![caption](../images/Screenshot_LOA_processing.png "")
 ## ✅ TODO
 - check out the logic on how EventActions are generated.
 - figure out what sp_susemp_process does
