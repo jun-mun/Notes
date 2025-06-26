@@ -30,55 +30,56 @@ There are 2 main base classes:
 	2. ACA_MonthlyEligBatchJob ❌ 
 	3. AutoWaiveJob ✔️ 
 		calls usp_Batch_AutoWaiveProcessEmployer - insert EmployeeElection
-	4. AutoenrollJob ❌ 
-	5. BaseCobraJob ❌ 
-	6. CanadianDefaultEnrollmentJob ❌ 
-	7. ClosingFTUJob ❌ 
-	8. CobraCoverageTerminationJob ❌ 
-	9. CobraDBPProcessJob ❌ 
-	10. CobraExpirationJob ❌ 
-	11. CobraSubsidyDisabilityRecalcJob ❌ 
-	12. DVSSubmissionJob ❌ 
-	13. DefaultEnrollmentJob ❌ 
+	4. AutoenrollJob  
+	5. BaseCobraJob  
+	6. CanadianDefaultEnrollmentJob✔️
+		Inserts using UESMiddleware EmployeeElectionsDAO
+	7. ClosingFTUJob  
+	8. CobraCoverageTerminationJob  
+	9. CobraDBPProcessJob  
+	10. CobraExpirationJob  
+	11. CobraSubsidyDisabilityRecalcJob  
+	12. DVSSubmissionJob  
+	13. DefaultEnrollmentJob  
 	14. DepAgeOutJob ❌ 
 	15. DepTermJob ✔️
 	16. DependentAgeOfAttainmentJob ❌  
-	17. ECAutoAllocationJob ❌
-	18. EligCacheJob❌
-	19. EmployeeAgingJob ❌
-	20. EmployeeCoverageOfferedJob❌
-	21. EmployeeRatesELigCacheJob❌
-	22. EmployerMandateJob❌
-	23. EmployerMandateJobScheduler❌
-	24. EngagementVerificationJob❌
-	25. EoiJob❌
-	26. FulltimeStudentAuditJob❌
-	27. FutureAutowaiveJob❌
-	28. GroupStructureJOb❌
-	29. GroupStructureJobScheduler❌
-	30. HPCCUDPReconciliationJob❌
-	31. INGEoiJob❌
-	32. LOAFutureElectionTerminationsJob❌
-	33. LOSJob❌
-	34. LOSResetJob❌
-	35. MissingDepSSNNoticesJob❌
-	36.  PlanEligAgeJob❌
+	17. ECAutoAllocationJob 
+	18. EligCacheJob
+	19. EmployeeAgingJob 
+	20. EmployeeCoverageOfferedJob
+	21. EmployeeRatesELigCacheJob
+	22. EmployerMandateJob
+	23. EmployerMandateJobScheduler
+	24. EngagementVerificationJob
+	25. EoiJob
+	26. FulltimeStudentAuditJob
+	27. FutureAutowaiveJob
+	28. GroupStructureJOb
+	29. GroupStructureJobScheduler
+	30. HPCCUDPReconciliationJob
+	31. INGEoiJob
+	32. LOAFutureElectionTerminationsJob
+	33. LOSJob
+	34. LOSResetJob
+	35. MissingDepSSNNoticesJob
+	36. PlanEligAgeJob
 	37. RateRecalcJob✔️
-	38. RenewalEngineJob❌
+	38. RenewalEngineJob
 	39. RenewalJob✔️
-	40. ReportJob❌
-	41. SpouseAgineJob❌
-	42. UDPPlanReconciliationJob❌
-	43. UDPRequestReconciliationJob❌
-	44. VaccineVerificationJob❌
-	45. VaccineVerificationOngoingJob❌
-	46. WellnessCreditJob❌
-	47. WellnessProgramJob❌
+	40. ReportJob
+	41. SpouseAgingJob
+	42. UDPPlanReconciliationJob
+	43. UDPRequestReconciliationJob
+	44. VaccineVerificationJob
+	45. VaccineVerificationOngoingJob
+	46. WellnessCreditJob
+	47. WellnessProgramJob
 
 #### 2. Implementations of BaseEmployerJob
-	1. ACA_MonthlyEligBatchERJob❌
-	2. AutoEnrollERJob❌
-	3. AutoWaiveERJob❌
+	1. ACA_MonthlyEligBatchERJob
+	2. AutoEnrollERJob
+	3. AutoWaiveERJob️️✔️
 	4. BaseDefaultEnrollmentERJobStep
 	5. CanadianDefaultEnrollmentERJob
 	6. CobraCoverageTerminationERJob
