@@ -211,37 +211,6 @@ This job eventually calls USP_DenyDependentProcess and proc_usp_RemoveDependentF
 
 
 
-## 🧩 1. Event Definitions
-
-| **Event**                  | **Trigger Condition**                                                                 |
-|---------------------------|----------------------------------------------------------------------------------------|
-| Rate Recalculation         | Change in benefit rate due to salary update, plan change, or policy adjustment       |
-| Renewal                   | Annual or periodic plan renewal                                                       |
-| Dependent Age Out         | Dependent reaches age limit for coverage (e.g., 26 years old)                         |
-| Employee Aging            | Employee reaches age bracket affecting Life/Disability rates                          |
-| Spouse Aging              | Spouse reaches age bracket affecting Life insurance rates                             |
-
----
-
-## 🧮 2. Imputed Income Calculation Logic
-
-| **Input Fields**                  | **Description**                                                                 |
-|----------------------------------|---------------------------------------------------------------------------------|
-| Coverage Amount                  | Total coverage provided (e.g., \$100,000)                                       |
-| IRS Threshold                    | \$50,000 (for group-term life insurance)                                        |
-| Age-Based Rate Table             | Monthly cost per \$1,000 of coverage based on age bracket                       |
-| Taxable Amount                   | (Coverage - \$50,000) / \$1,000 × Rate                                          |
-| Frequency                        | Monthly or per pay period                                                       |
-
----
-
-## 🛠️ 3. System Requirements
-
-- **New Column**: `ImputedIncome` (Decimal, currency format)
-- **Trigger Points**: System must recalculate and update `ImputedIncome` when any of the 5 events occur.
-- **Audit Trail**: Log changes with timestamp, event type, and previous value.
-- **Validation**: Ensure age and coverage data are current before calculation.
-
 ---
 ### List of Insert/Update to EmployeeElection in rpadmin
 1. sp_rate_recalc_batch (rate recalc)
