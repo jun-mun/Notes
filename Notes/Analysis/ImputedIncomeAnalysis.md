@@ -14,6 +14,7 @@ There are 2 main base classes:
 
  Simply put, a BaseJob will initialize an instance of BaseEmployerJob and call its execute method. First, let's look at BaseJob.
 
+### BaseJob
 BaseJob extends Job and overrides the **execute** method. This execute method does a couple of things and then eventually calls its own **executeJob** method Heres the BaseJob class structure:
 ```java
 public abstract class BaseJob implements Job {
@@ -50,6 +51,8 @@ for (int j = 0; j < employers.size(); j++) {
 	}
 }
 ```
+
+### BaseEmployerJob
 
 BaseEmployerJob is similar to BaseJob where there are **execute* methods with an abstract **executeJob** method left for implementation:
 ```java
