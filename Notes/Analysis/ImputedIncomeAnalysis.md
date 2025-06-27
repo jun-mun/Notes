@@ -40,12 +40,10 @@ This overriden executeJob gets a list of employers, iterates to call the corresp
 for (int j = 0; j < employers.size(); j++) {
 	employer = (Employer) employers.get(j);
 	EligCacheERJob erJob = new EligCacheERJob(employer.getErId(), employer.getErName());
+	// Calls corresponding BaseEmployerJob implementation
 	erJob.execute(context, jobRunDAO, jobRunBean, statusLogBean);
-	if (allERs) {
-		statusLogBean.logJobProgress("Eligibility Cache For All Employers", employerCount, (j + 1), jobRunBean.getStart(), true, "Employer");
-	} else {
-		statusLogBean.logJobProgress("Eligibility Cache For Specific Employers", employerCount, (j + 1), jobRunBean.getStart(), true, "Employer");
-	}
+	
+	// ...
 }
 ```
 
@@ -100,7 +98,8 @@ public abstract class BaseEmployerJob {
 	10. CobraExpirationJob  
 	11. CobraSubsidyDisabilityRecalcJob  
 	12. DVSSubmissionJob  
-	13. DefaultEnrollmentJob  
+	13. DefaultEnrollmentJob  ✔️
+		- Inserts using UESMiddleware EmployeeElectionsDAO
 	14. DepAgeOutJob ❌ 
 	15. DepTermJob ✔️
 		Does update EmployeeElection but looks like only updates and terminate
@@ -154,7 +153,9 @@ public abstract class BaseEmployerJob {
 	6. CobraCoverageTerminationERJob
 	7. CobraExpirationERJob
 	8. CobraSubsidyDisabilityRecalcERJob
-	9. DefaultEnrollmentERJob
+	9. DefaultEnrollmentERJob✔️
+		- Inserts using UESMiddleware EmployeeElectionsDAO.
+
 	10. DefaultEnrollmentERJobEmployerContribution
 	11. DefaultEnrollmentERJobWellnessPrograms
 	12. DepAgeOutERJob
@@ -278,7 +279,8 @@ This job eventually calls USP_DenyDependentProcess and proc_usp_RemoveDependentF
 
 ---
 
-
+### CoverageRecalcBean
+Came across this class. This looks like its worth looking into?
 
 ---
 ### List of Insert/Update to EmployeeElection in rpadmin
@@ -289,4 +291,5 @@ This job eventually calls USP_DenyDependentProcess and proc_usp_RemoveDependentF
 ## ❓ Questions:
 
 - Any other rate recalculations? How does it work with batch vs user updates
+- There are a handful of termination jobs, do we worry about updating imputed income for terminating elections?
 
