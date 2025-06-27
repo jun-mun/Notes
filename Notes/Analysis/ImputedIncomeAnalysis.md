@@ -82,10 +82,14 @@ public abstract class BaseEmployerJob {
 
 #### 1. BaseJob
 	1. ACAReportingEngineJob ❌ 
-	2. ACA_MonthlyEligBatchJob ❌ 
+		- Could not find
+	2. ACA_MonthlyEligBatchJob ❌
+		- could not find 
 	3. AutoWaiveJob ✔️ 
 		calls usp_Batch_AutoWaiveProcessEmployer - insert EmployeeElection
-	4. AutoenrollJob  
+	4. AutoenrollJob ✔️ 
+		Eventually calls UESMiddleware ElectEEChoices#SaveElection to waive and add records to the EmployeeELection table using. It calls UESMiddlware DataServer#UpdateCoverage and alot of other DataServer calls to update HSA, dependents, etc. Calls EEElectionServer#updateCoverage which uses EeElectionsDAO#insert. There must be thousands of lines for this flow... I think it's best to update imputed income after...
+
 	5. BaseCobraJob  
 	6. CanadianDefaultEnrollmentJob✔️
 		Inserts using UESMiddleware EmployeeElectionsDAO
@@ -127,6 +131,10 @@ public abstract class BaseEmployerJob {
 	37. RateRecalcJob✔️
 		Calls Proc_usp_rate_recalc_batch. Directly updates EmployeeElections with RecalcDetails columns. 
 	38. RenewalEngineJob
+		Calls either:
+		- EligCacheERJob
+		- RenewalERJob✔️
+		- AutoEnrollERJob
 	39. RenewalJob✔️
 	40. ReportJob
 	41. SpouseAgingJob
