@@ -74,9 +74,17 @@ public abstract class BaseEmployerJob {
 }
 ```
 
+### Summary
+**Each specific job implementation logic is in the overriden BaseEmployerJob#executeJob method.**
+
+## BaseJob/BaseEmployerJob Children List
+<br>
  Listed below are all classes that extend these 2 classes and marks the potential places we need to make changes.... Any one of these jobs can make an update to EmployeeElection, and any place we leave out could be a potential for a bug.
 
+<br>
+
  Files marked as ❌ indicate a file that does not update or insert into EmployeeElections, while a ✔️ indicates that it inserts/updates into EmployeeELections and InputedIncome should be calculated
+
 
 #### 1. BaseJob
 	1. ACAReportingEngineJob ❌ 
@@ -85,8 +93,14 @@ public abstract class BaseEmployerJob {
 		- could not find 
 	3. AutoWaiveJob ✔️ 
 		calls usp_Batch_AutoWaiveProcessEmployer - insert EmployeeElection
+	
 	4. AutoenrollJob ✔️ 
-		Eventually calls UESMiddleware ElectEEChoices#SaveElection to waive and add records to the EmployeeELection table using. It calls UESMiddlware DataServer#UpdateCoverage and alot of other DataServer calls to update HSA, dependents, etc. Calls EEElectionServer#updateCoverage which uses EeElectionsDAO#insert. There must be thousands of lines for this flow... I think it's best to update imputed income after...
+		Eventually calls UESMiddleware ElectEEChoices#SaveElection to waive 
+		and add records to the EmployeeELection table using. It calls UESMiddlware
+		DataServer#UpdateCoverage and alot of other DataServer calls to update HSA,
+		dependents, etc. Calls EEElectionServer#updateCoverage which uses
+		EeElectionsDAO#insert. There must be thousands of lines for this flow...
+		I think it's best to update imputed income after...
 
 	5. BaseCobraJob  
 	6. CanadianDefaultEnrollmentJob✔️
@@ -98,15 +112,26 @@ public abstract class BaseEmployerJob {
 	10. CobraExpirationJob  
 	11. CobraSubsidyDisabilityRecalcJob  
 	12. DVSSubmissionJob  
+
 	13. DefaultEnrollmentJob  ✔️
 		- Inserts using UESMiddleware EmployeeElectionsDAO
-	14. DepAgeOutJob ❌ 
+
+	14. DepAgeOutJob  ❌
+		- The only updates I saw to EmployeeElections were for 
+		termination, but I might have missed something?
+	
+
 	15. DepTermJob ✔️
 		Does update EmployeeElection but looks like only updates and terminate
 
 	16. DependentAgeOfAttainmentJob  ❌ 
 	17. ECAutoAllocationJob 
-	18. EligCacheJob
+	18. EligCacheJob❌
+		- I don't think this updates to EmployeeElection
+		Updates EmployeeAction and runs Proc_usp_susemp_exchange_rating_band,
+		which doesn't update or insert elections.
+
+
 	19. EmployeeAgingJob✔️ 
 		calls UESMiddleware EmployeElection#update
 	20. EmployeeCoverageOfferedJob
@@ -136,7 +161,8 @@ public abstract class BaseEmployerJob {
 		- AutoEnrollERJob
 	39. RenewalJob✔️
 	40. ReportJob
-	41. SpouseAgingJob
+	41. SpouseAgingJob✔️
+
 	42. UDPPlanReconciliationJob
 	43. UDPRequestReconciliationJob
 	44. VaccineVerificationJob
@@ -158,11 +184,18 @@ public abstract class BaseEmployerJob {
 
 	10. DefaultEnrollmentERJobEmployerContribution
 	11. DefaultEnrollmentERJobWellnessPrograms
-	12. DepAgeOutERJob
+	12. DepAgeOutERJob❌
+		- The only updates I saw to EmployeeElections were for 
+		termination, but I might have missed something?
+	
 	13. DepTermERJob✔️
 	14. DependentAgeOfAttainmentERJob
 	15. ECAutoAllocationERJob
-	16. EligCacheERJob
+	16. EligCacheERJob❌
+		- I don't think this updates to EmployeeElection
+		Updates EmployeeAction and runs Proc_usp_susemp_exchange_rating_band,
+		which doesn't update or insert elections.
+
 	17. EmployeeAgingERJob✔️
 	18. EmployeeRatesEligCacheERJob
 	19. EmployerMandateERJob
@@ -179,7 +212,8 @@ public abstract class BaseEmployerJob {
 	29. PlanEligAgeGainERJob
 	30. PlanEligAgeLossERJob
 	31. RenewalERJob✔️
-	32. SpouseAgingERJob
+	32. SpouseAgingERJob✔️
+		- Calls UESMiddleware EmployeeElectionsDAO
 	33. UDPPlanReconciliationERJob
 	34. UDPRequestReconciliationERJob
 	35. VaccineVerificationERJob
