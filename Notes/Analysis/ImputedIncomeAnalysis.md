@@ -21,6 +21,30 @@ There are 2 main base classes:
  - BaseJob
  - BaseEmployerJob
 
+BaseJob extends Job and overrides the **execute** method. This execute method does a couple of things and then eventually calls its own **executeJob** method Heres the BaseJob class structure:
+```java
+public abstract class BaseJob implements Job {
+	@Override
+    public final void execute(final JobExecutionContext context) throws JobExecutionException {
+		// Do a couple things and calls executeJob
+		executeJob(context, jobRunDAO, jobRunBean, statusLogBean);
+	}
+
+	public abstract void executeJob(final JobExecutionContext context, JobRunDAO jobRunDAO, JobRunBean jobRunBean, StatusLogBean statusLogBean);
+
+    public abstract String getJobName();
+
+    
+	// Other Getters and Setters
+
+}
+```
+
+Each Job extends BaseJob and the BaseJob usually calls the corresponding BaseEmployerJob.
+
+
+ The main flow consists of classes that has a main method that calls a 
+
  Listed below are all classes that extend these 2 classes and marks the potential places we need to make changes.... Any one of these jobs can make an update to EmployeeElection, and any place we leave out could be a potential for a bug.
 
  Files marked as ❌ indicate a file that does not update or insert into EmployeeElections, while a ✔️ indicates that it inserts/updates into EmployeeELections and InputedIncome should be calculated
@@ -46,7 +70,8 @@ There are 2 main base classes:
 	16. DependentAgeOfAttainmentJob ❌  
 	17. ECAutoAllocationJob 
 	18. EligCacheJob
-	19. EmployeeAgingJob 
+	19. EmployeeAgingJob✔️ 
+		calls UESMiddleware EmployeElection#update
 	20. EmployeeCoverageOfferedJob
 	21. EmployeeRatesELigCacheJob
 	22. EmployerMandateJob
@@ -81,7 +106,7 @@ There are 2 main base classes:
 	2. AutoEnrollERJob
 	3. AutoWaiveERJob️️✔️
 	4. BaseDefaultEnrollmentERJobStep
-	5. CanadianDefaultEnrollmentERJob
+	5. CanadianDefaultEnrollmentERJob✔️
 	6. CobraCoverageTerminationERJob
 	7. CobraExpirationERJob
 	8. CobraSubsidyDisabilityRecalcERJob
@@ -93,7 +118,7 @@ There are 2 main base classes:
 	14. DependentAgeOfAttainmentERJob
 	15. ECAutoAllocationERJob
 	16. EligCacheERJob
-	17. EmployeeAgingERJob
+	17. EmployeeAgingERJob✔️
 	18. EmployeeRatesEligCacheERJob
 	19. EmployerMandateERJob
 	20. EngagementVerificationERJob 
