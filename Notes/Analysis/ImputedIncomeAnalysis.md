@@ -4,9 +4,6 @@
 
 To identify where inputed incomes are calculated and where EmployeeElections are updated or inserted.
 
-## ❓ Questions:
-- Any other rate recalculations? How does it work with batch vs user updates
-
 ## Rpadmin Overview
 There are 2 main base classes: 
  - BaseJob
@@ -289,3 +286,7 @@ This job eventually calls USP_DenyDependentProcess and proc_usp_RemoveDependentF
 2. Renewal (EmployeeELectionDAO)
 3. USP_DenyDependentProcess (Dependent Term)
 4. proc_usp_RemoveDependentFromCoverage (Dependent Term)
+## ❓ Questions:
+
+- Any other rate recalculations? How does it work with batch vs user updates
+
