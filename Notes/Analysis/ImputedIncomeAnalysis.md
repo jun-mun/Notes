@@ -1,35 +1,30 @@
 # 🧾 Technical Analysis Doc: Imputed Income Update Events
 
 ## 📌 Objective
-To identify where imputed incomes are calculated and add a step to store the imputed income value in a new column when any of the following events occur:
-- Rate Recalculation  
-- Renewal  
-- Dependent Age Out  
-- Employee Aging (Life/Disability)  
-- Spouse Aging (Life)
 
----
+To identify where inputed incomes are calculated and where EmployeeElections are updated or inserted.
 
 ## ❓ Questions:
 - Any other rate recalculations? How does it work with batch vs user updates
-
----
-##  ✅ TODO section
 
 ## Rpadmin Overview
 There are 2 main base classes: 
  - BaseJob
  - BaseEmployerJob
 
+ Simply put, a BaseJob will initialize an instance of BaseEmployerJob and call its execute method. First, let's look at BaseJob.
+
 BaseJob extends Job and overrides the **execute** method. This execute method does a couple of things and then eventually calls its own **executeJob** method Heres the BaseJob class structure:
 ```java
 public abstract class BaseJob implements Job {
+	//Implemts Job
 	@Override
     public final void execute(final JobExecutionContext context) throws JobExecutionException {
 		// Do a couple things and calls executeJob
 		executeJob(context, jobRunDAO, jobRunBean, statusLogBean);
 	}
 
+	// Abstract method for execution implementations
 	public abstract void executeJob(final JobExecutionContext context, JobRunDAO jobRunDAO, JobRunBean jobRunBean, StatusLogBean statusLogBean);
 
     public abstract String getJobName();
@@ -40,10 +35,46 @@ public abstract class BaseJob implements Job {
 }
 ```
 
-Each Job extends BaseJob and the BaseJob usually calls the corresponding BaseEmployerJob.
+Each Job extends BaseJob and the BaseJob usually overrides executeJob.
+This overriden executeJob gets a list of employers, iterates to call the corresponding BaseEmployerJob#execute:
 
+```java
+for (int j = 0; j < employers.size(); j++) {
+	employer = (Employer) employers.get(j);
+	EligCacheERJob erJob = new EligCacheERJob(employer.getErId(), employer.getErName());
+	erJob.execute(context, jobRunDAO, jobRunBean, statusLogBean);
+	if (allERs) {
+		statusLogBean.logJobProgress("Eligibility Cache For All Employers", employerCount, (j + 1), jobRunBean.getStart(), true, "Employer");
+	} else {
+		statusLogBean.logJobProgress("Eligibility Cache For Specific Employers", employerCount, (j + 1), jobRunBean.getStart(), true, "Employer");
+	}
+}
+```
 
- The main flow consists of classes that has a main method that calls a 
+BaseEmployerJob is similar to BaseJob where there are **execute* methods with an abstract **executeJob** method left for implementation:
+```java
+public abstract class BaseEmployerJob {
+	
+	public final void execute(...) {
+		this.execute(context, jobRunDAO, jobRunBean, statusLogBean, null);
+	}
+
+	public final void execute(...) {
+		EmployerJobRunBean ejrb = new EmployerJobRunBean();
+		// Does stuff then calls executeJob
+		executeJob(this.erid, this.erName, context, statusLogBean, data);
+	}
+
+	public int getErid() {
+		return this.erid;
+	}
+
+	public abstract String getName();
+
+	// Main method that needs to get implemented, main logic for job
+	public abstract void executeJob(...);
+}
+```
 
  Listed below are all classes that extend these 2 classes and marks the potential places we need to make changes.... Any one of these jobs can make an update to EmployeeElection, and any place we leave out could be a potential for a bug.
 
@@ -58,6 +89,7 @@ Each Job extends BaseJob and the BaseJob usually calls the corresponding BaseEmp
 	5. BaseCobraJob  
 	6. CanadianDefaultEnrollmentJob✔️
 		Inserts using UESMiddleware EmployeeElectionsDAO
+
 	7. ClosingFTUJob  
 	8. CobraCoverageTerminationJob  
 	9. CobraDBPProcessJob  
@@ -67,14 +99,17 @@ Each Job extends BaseJob and the BaseJob usually calls the corresponding BaseEmp
 	13. DefaultEnrollmentJob  
 	14. DepAgeOutJob ❌ 
 	15. DepTermJob ✔️
-	16. DependentAgeOfAttainmentJob ❌  
+		Does update EmployeeElection but looks like only updates and terminate
+
+	16. DependentAgeOfAttainmentJob  ❌ 
 	17. ECAutoAllocationJob 
 	18. EligCacheJob
 	19. EmployeeAgingJob✔️ 
 		calls UESMiddleware EmployeElection#update
 	20. EmployeeCoverageOfferedJob
 	21. EmployeeRatesELigCacheJob
-	22. EmployerMandateJob
+	22. EmployerMandateJob❌
+		Eventually calls USP_ERMandate_Batch, does no update to election
 	23. EmployerMandateJobScheduler
 	24. EngagementVerificationJob
 	25. EoiJob
@@ -90,6 +125,7 @@ Each Job extends BaseJob and the BaseJob usually calls the corresponding BaseEmp
 	35. MissingDepSSNNoticesJob
 	36. PlanEligAgeJob
 	37. RateRecalcJob✔️
+		Calls Proc_usp_rate_recalc_batch. Directly updates EmployeeElections with RecalcDetails columns. 
 	38. RenewalEngineJob
 	39. RenewalJob✔️
 	40. ReportJob
